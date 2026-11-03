@@ -39,11 +39,22 @@ The app uses `@sveltejs/adapter-static`. It needs no server, database, or API. T
 
 The site is live at https://red-dune-019d25210.1.azurestaticapps.net/ on Azure's Free plan. The Azure resource is `mathew-resume` in resource group `rg-mathew-resume`. The initial deployment was uploaded directly from a local build.
 
-To enable deployment from GitHub:
+Every push to `main` (including a merged pull request) runs **Deploy to Azure**. The workflow installs locked dependencies, checks formatting and types, builds the site, and uploads it only if all checks pass. Other branches and pull requests run checks without deploying. You can also run **Deploy to Azure** manually on `main` from the Actions tab.
 
-1. Copy the existing Azure resource's deployment token into the GitHub repository secret `AZURE_STATIC_WEB_APPS_API_TOKEN`.
-2. Run **Deploy to Azure** from the repository's Actions tab, selecting `main`.
+One-time credential setup, using an account with access to the Azure resource and GitHub repository:
 
-Deployment is manual. Pushing commits runs checks without publishing the site. The workflow runs only on `main`.
+```sh
+az login
+gh auth login
+az staticwebapp secrets list \
+  --name mathew-resume \
+  --resource-group rg-mathew-resume \
+  --query properties.apiKey --output tsv \
+  | gh secret set AZURE_STATIC_WEB_APPS_API_TOKEN --repo Mystery2099/svelte-resume
+```
+
+This pipes the token directly into GitHub's encrypted repository secret. Alternatively, copy **Manage deployment token** from the Azure resource into **Settings → Secrets and variables → Actions → New repository secret** on GitHub, using the name `AZURE_STATIC_WEB_APPS_API_TOKEN`.
+
+Push this workflow to `main` to activate automatic deployment. Follow the run in the [repository's Actions tab](https://github.com/Mystery2099/svelte-resume/actions/workflows/azure-static-web-apps.yml). A missing deployment secret produces a setup error before the build. Production deployments run serially so an older in-progress upload finishes before a newer one starts.
 
 See [Azure build configuration](https://learn.microsoft.com/en-us/azure/static-web-apps/build-configuration#skip-building-front-end-app) for the static upload settings. Custom domains and HTTPS can be configured on the Azure resource after deployment.
