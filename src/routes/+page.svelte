@@ -14,8 +14,8 @@
 <svelte:head>
 	<title>{title}</title>
 	<meta name="description" content={`${profile.name}. ${profile.summary}`} />
-	<meta name="theme-color" content="#000000" media="(prefers-color-scheme: dark)" />
-	<meta name="theme-color" content="#eff1f5" media="(prefers-color-scheme: light)" />
+	<meta name="theme-color" content="#0f1513" media="(prefers-color-scheme: dark)" />
+	<meta name="theme-color" content="#f6faf8" media="(prefers-color-scheme: light)" />
 	<meta property="og:type" content="website" />
 	<meta property="og:title" content={title} />
 	<meta property="og:description" content={profile.summary} />
@@ -215,8 +215,8 @@
 		color: var(--ink);
 	}
 	.theme input:checked + span {
-		border-color: var(--line);
-		color: var(--ink);
+		background: var(--accent-c);
+		color: var(--on-accent-c);
 	}
 	.theme input:focus-visible + span {
 		outline: 2px solid var(--accent);
@@ -239,10 +239,10 @@
 	}
 	h1 {
 		font-size: clamp(2.25rem, 1rem + 5.4vw, 4.6rem);
-		font-stretch: 125%;
-		font-weight: 800;
+		font-stretch: 116%;
+		font-weight: 720;
 		line-height: 0.98;
-		letter-spacing: -0.03em;
+		letter-spacing: -0.025em;
 	}
 	h1 span {
 		white-space: nowrap;
@@ -285,19 +285,17 @@
 	.contact .download {
 		display: inline-block;
 		margin-top: 1.1rem;
-		padding: 0.45rem 0.95rem;
-		border: 1px solid var(--accent);
-		border-radius: 999px;
-		color: var(--accent);
+		padding: 0.6rem 1.25rem;
+		border-radius: 24px;
+		background: var(--accent-c);
+		color: var(--on-accent-c);
 		font-weight: 600;
+		letter-spacing: 0.01em;
 		text-decoration: none;
-		transition:
-			background-color 120ms ease,
-			color 120ms ease;
+		transition: border-radius 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
 	}
 	.contact .download:hover {
-		background: var(--accent);
-		color: var(--bg);
+		border-radius: 14px;
 	}
 
 	.body {
