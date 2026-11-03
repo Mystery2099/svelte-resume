@@ -1,5 +1,5 @@
 <script lang="ts">
-	import '@fontsource-variable/mona-sans/wdth.css';
+	import '@fontsource-variable/roboto-flex/wdth.css';
 	import '../app.css';
 	import favicon from '#lib/assets/favicon.svg';
 	import type { LayoutProps } from './$types';
