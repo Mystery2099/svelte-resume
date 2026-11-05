@@ -1,5 +1,7 @@
 # Mathew Kennedy-Brewer's resume
 
+Live at [resume.mathewtech.us](https://resume.mathewtech.us/).
+
 A one-page SvelteKit resume with Catppuccin green accents and a skills sidebar. It has a black dark theme and a Catppuccin Latte light theme, follows the system setting by default, and offers a System / Light / Dark switch built with CSS `:has()`. The switch needs no JavaScript, so a manual choice lasts until the page reloads. Experience, education, and cybersecurity achievements occupy the main column. On smaller screens, the sidebar follows the main content.
 
 The static build contains complete HTML and CSS with no client-side JavaScript. Email, phone, GitHub, and PDF links work without hydration. Browser printing switches to a single-column layout that mirrors the Word and PDF resume: Arial, the same margins, teal section rules, and the same section order.
@@ -33,28 +35,31 @@ pnpm preview
 
 Local resume originals and agent tooling are excluded from version control. The downloadable PDF lives in `static/resume.pdf`.
 
-## Azure Static Web Apps
+## Cloudflare Pages
 
-The app uses `@sveltejs/adapter-static`. It needs no server, database, or API. The deployment workflow builds with pnpm and uploads the `build/` directory directly, with Azure's own build step disabled.
+Cloudflare Pages hosts the site at [resume.mathewtech.us](https://resume.mathewtech.us/). The default Pages URL is [resume-1xo.pages.dev](https://resume-1xo.pages.dev/), and the downloadable resume is at [resume.mathewtech.us/resume.pdf](https://resume.mathewtech.us/resume.pdf).
 
-The site is live at https://red-dune-019d25210.1.azurestaticapps.net/ on Azure's Free plan. The Azure resource is `mathew-resume` in resource group `rg-mathew-resume`. The initial deployment was uploaded directly from a local build.
+The Pages project is `resume` in Mathews Account, connected to the `Mystery2099/svelte-resume` GitHub repository. Every push to `main`, including a merged pull request, automatically builds and deploys production through Cloudflare's Git integration. GitHub Actions separately runs the repository checks.
 
-Every push to `main` (including a merged pull request) runs **Deploy to Azure**. The workflow installs locked dependencies, checks formatting and types, builds the site, and uploads it only if all checks pass. Other branches and pull requests run checks without deploying. You can also run **Deploy to Azure** manually on `main` from the Actions tab.
+The app uses `@sveltejs/adapter-static` and needs no server, database, or API. The Pages build settings are:
 
-One-time credential setup, using an account with access to the Azure resource and GitHub repository:
+| Setting                | Value                                                                                   |
+| ---------------------- | --------------------------------------------------------------------------------------- |
+| Production branch      | `main`                                                                                  |
+| Framework preset       | None                                                                                    |
+| Root directory         | Repository root                                                                         |
+| Build command          | `corepack pnpm install --frozen-lockfile && corepack pnpm check && corepack pnpm build` |
+| Build output directory | `build`                                                                                 |
+| Environment variable   | `SKIP_DEPENDENCY_INSTALL=1`                                                             |
+| Node.js version        | 24, from `.node-version`                                                                |
+| pnpm version           | 12.8.1, from `package.json`                                                             |
 
-```sh
-az login
-gh auth login
-az staticwebapp secrets list \
-  --name mathew-resume \
-  --resource-group rg-mathew-resume \
-  --query properties.apiKey --output tsv \
-  | gh secret set AZURE_STATIC_WEB_APPS_API_TOKEN --repo Mystery2099/svelte-resume
-```
+The build command installs locked dependencies, runs type and accessibility checks, and generates the static site. `SKIP_DEPENDENCY_INSTALL=1` skips Cloudflare's automatic dependency installation because the build command handles it explicitly. Pages deployment does not require a GitHub Actions deployment token.
 
-This pipes the token directly into GitHub's encrypted repository secret. Alternatively, copy **Manage deployment token** from the Azure resource into **Settings → Secrets and variables → Actions → New repository secret** on GitHub, using the name `AZURE_STATIC_WEB_APPS_API_TOKEN`.
+Manage builds, logs, preview deployments, and custom domains in the [Cloudflare Pages project dashboard](https://dash.cloudflare.com/ca6802d32936db8a98c661703bb90c72/pages/view/resume). The custom domain uses a Cloudflare-managed CNAME from `resume.mathewtech.us` to `resume-1xo.pages.dev`, with HTTPS enabled.
 
-Push this workflow to `main` to activate automatic deployment. Follow the run in the [repository's Actions tab](https://github.com/Mystery2099/svelte-resume/actions/workflows/azure-static-web-apps.yml). A missing deployment secret produces a setup error before the build. Production deployments run serially so an older in-progress upload finishes before a newer one starts.
+## Existing Azure deployment
 
-See [Azure build configuration](https://learn.microsoft.com/en-us/azure/static-web-apps/build-configuration#skip-building-front-end-app) for the static upload settings. Custom domains and HTTPS can be configured on the Azure resource after deployment.
+The previous site remains available at [red-dune-019d25210.1.azurestaticapps.net](https://red-dune-019d25210.1.azurestaticapps.net/). The Azure resource is `mathew-resume` in resource group `rg-mathew-resume`.
+
+The existing `.github/workflows/azure-static-web-apps.yml` workflow still deploys to Azure on pushes to `main` and manual runs, using the `AZURE_STATIC_WEB_APPS_API_TOKEN` repository secret. This runs independently of Cloudflare Pages. The Azure workflow and resource have not been retired.
